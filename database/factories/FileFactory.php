@@ -2,8 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Comment;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Storage;
 
 class FileFactory extends Factory
 {
@@ -22,7 +24,8 @@ class FileFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'path' => $this->faker->imageUrl($width = 640, $height = 480),
+            'comment_id' => Comment::factory(),
         ];
     }
 }
