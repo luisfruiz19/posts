@@ -19,21 +19,24 @@
                                 <div style="display: block">
                                     # <span class="badge bg-info text-white">{{row.tag.name}}</span> - <small>{{formatedDate(row.created_at)}}</small>
                                 </div>
-                                <div style="display: inline-block">
+                                <div style="display: block">
                                     <a href="#" v-if="row.comments.length>0">
-                                        <div v-if="row.comments.length===1 && !row.show_comments" style="display: inline-block" @click.stop="row.show_comments=true">
+                                        <div v-if="row.comments.length===1 && !row.show_comments" style="display: inline-block" @click.stop.prevent="row.show_comments=true">
                                             <span>Ver {{row.comments.length}} Comentario </span>
                                         </div>
-                                        <div v-else-if="row.comments.length>1 && !row.show_comments" style="display: inline-block" @click.stop="row.show_comments=true">
+                                        <div v-else-if="row.comments.length>1 && !row.show_comments" style="display: inline-block" @click.stop.prevent="row.show_comments=true">
                                             <span>Ver {{row.comments.length}} Comentarios </span>
                                         </div>
                                         <div v-if="row.show_comments" style="display: inline-block" @click.stop="row.show_comments=false">
                                             <span>Ocultar Comentario</span>
                                         </div>
                                     </a>
-                                    <span style="cursor: pointer;color: #1d68a7">
-                                    (+ Comentar)
-                                  </span>
+                                    <span @click="row.show_new_comment=!row.show_new_comment" style="cursor: pointer;color: #1d68a7">
+                                    {{row.show_new_comment?`Cancelar`:`(+ Comentar)`}}
+                                   </span>
+                                    <div v-if="row.show_new_comment">
+                                        <comment-form :post_id="row.id" @update-comments="getAllPosts();row.show_comments=true"></comment-form>
+                                    </div>
                                 </div>
                             </template>
                             <template #custom>
@@ -49,10 +52,10 @@
                                     Agregar Nuevo Post
                             </template>
                             <template #body>
-<!--                                <form-post></form-post>-->
+                                <form-post @update-post="getAllPosts();modalNewPost=false" ref="post"></form-post>
                             </template>
                             <template #footer>
-                                <button class="btn btn-sm btn-primary">Guardar Post</button>
+                                <button class="btn btn-sm btn-primary" @click="$refs.post.savePost()">Guardar Post</button>
                             </template>
                     </modal-component>
                 </div>
@@ -64,12 +67,14 @@
 <script>
 
 
+import FormPost from "../Form/FormPost";
+import CommentComponent from "./CommentComponent";
 export default {
-    name: "MainComponent",
-    data () {
+    name: "MainComponent", components: {CommentComponent, FormPost}, data () {
         return {
             modalNewPost:false,
             posts:[],
+            showFormNewComment:false
         }
     },
     mounted() {
@@ -80,12 +85,13 @@ export default {
             try{
                 let data = {
                     params:{
-                        with:['tag','user','comments.user']
+                        with:['tag','user','comments.user','comments.files']
                     }
                 }
                 const response = await axios.get('/posts',data)
                 this.posts = response.data.posts.map(post=>{
                         post.show_comments=false
+                        post.show_new_comment=false
                         return post
                 })
             }catch (e) {

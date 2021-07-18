@@ -16,6 +16,7 @@ class CreateFilesTable extends Migration
         Schema::create('files', function (Blueprint $table) {
             $table->id();
             $table->string('path');
+            $table->string('mime_type');
             $table->foreignId('comment_id')->constrained('comments');
             $table->timestamps();
         });

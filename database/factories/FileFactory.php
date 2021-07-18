@@ -24,8 +24,10 @@ class FileFactory extends Factory
     public function definition()
     {
         return [
-            'path' => $this->faker->imageUrl($width = 640, $height = 480),
-            'comment_id' => Comment::factory(),
+           // 'path' => $this->faker->imageUrl($width = 640, $height = 480),
+            'path'              => $this->faker->image($dir = storage_path('app/file'), $width = 200, $height = 300, 'cats',false,true),
+            'mime_type'         => 'image/png',
+            'comment_id'        => Comment::factory(),
         ];
     }
 }

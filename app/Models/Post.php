@@ -18,6 +18,8 @@ class Post extends Model
         'user_id'
     ];
 
+    public const FOLDER = 'file';
+
     public function tag(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Tag::class);

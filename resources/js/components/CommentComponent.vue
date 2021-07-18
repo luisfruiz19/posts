@@ -1,58 +1,19 @@
 <template>
     <transition name="fade">
-        <div v-if="comments.length>0">
-            <div class="card card-body" v-for="(comment,index) in comments" :key="'comment_'+index">
+        <div v-if="commentsByProps.length>0">
+            <div class="card card-body" v-for="(comment,index) in commentsByProps" :key="'comment_'+index">
                 <strong>De: {{comment.user.name}}</strong>
                 <p>
                     {{comment.description}}
                 </p>
-                <div style="display: block">
-                    <button class="btn btn-sm btn-outline-secondary" @click="showFiles = comment">
-                        <i class="fas fa-file"></i>&nbsp;
-                        Ver Archivos
-                    </button>
+                <div v-if="comment.files.length>0" style="display: inline" v-for="(file,index) in comment.files" :key="'file_'+index">
+                    <div>
+                        <a :href="file.url" target="_blank">
+                            <img :src="file.url" alt="" style="width: 200px;height: 300px;object-fit: contain">
+                        </a>
+                    </div>
                 </div>
             </div>
-            <modal-component v-if="showFiles!=null" @close="showFiles=null">
-                <template #header>
-                    Archivos
-                </template>
-                <template #body>
-                   <div class="table-responsive-sm">
-                       <table class="table table-hover">
-                               <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Digital</th>
-                                    <th>Descargar</th>
-                                </tr>
-                               </thead>
-                               <tbody v-if="files.length>0" >
-                                <tr v-for="(file,index) in files" :key="'file_'+index">
-                                    <td>
-                                        {{index + 1}}
-                                    </td>
-                                    <td>
-                                        <a :href="file.path" target="_blank">
-                                            <i class="fas fa-file 2x"></i>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="">
-                                            Dowlonad
-                                        </a>
-                                    </td>
-                                </tr>
-                               </tbody>
-                               <tbody v-else>
-                                <tr>
-                                    <td colspan="3">No hay datos</td>
-                                </tr>
-                               </tbody>
-                       </table>
-                   </div>
-                </template>
-            </modal-component>
         </div>
     </transition>
 </template>
@@ -72,30 +33,22 @@ export default {
     data () {
         return {
             showFiles:null,
+            commentsByProps:[],
             files:[],
         }
     },
+    mounted() {
+        this.getCommentsByOrder()
+    },
     methods:{
-        async getAllFilesByIdComment(comment){
-            try{
-                let data = {
-                    params:{
-                        comment_id:comment.id
-                    }
-                }
-                const response = await axios.get(`/files`,data)
-                this.files = response.data.files
-            }catch (e) {
-                console.error(e.response)
-            }
-        }
+        getCommentsByOrder(){
+          this.commentsByProps = this.comments.sort(function (a,b){
+              return b.id - a.id
+          })
+        },
     },
     watch:{
-        showFiles(value){
-            if (value!=null){
-                this.getAllFilesByIdComment(value)
-            }
-        }
+
     }
 }
 </script>

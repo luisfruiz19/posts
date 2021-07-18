@@ -7,9 +7,13 @@ use Illuminate\Http\Request;
 
 class FileController extends Controller
 {
-    public function index(Request $request,FileRepository $fileRepository): \Illuminate\Http\JsonResponse
+    protected $fileRepository;
+    public function __construct(FileRepository $fileRepository){
+        $this->fileRepository = $fileRepository;
+    }
+    public function index(Request $request): \Illuminate\Http\JsonResponse
     {
-        $files = $fileRepository->getAll($request->all());
+        $files = $this->fileRepository->getAll($request->all());
         return response()->json(['files'=>$files,'success'=>true],200);
     }
 
@@ -26,5 +30,12 @@ class FileController extends Controller
 
     public function destroy(){
 
+    }
+
+
+    public function getfile($id)
+    {
+        $file = $this->fileRepository->getFileById($id);
+        return $file;
     }
 }
