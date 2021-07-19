@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return view('auth.login');
-});
+})->middleware('guest');
 Route::get('/test',function(){
     return Storage::path('file');
 });
