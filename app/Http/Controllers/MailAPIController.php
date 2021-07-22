@@ -15,7 +15,7 @@ class MailAPIController extends Controller
     {
         $input = $request->all();
 
-        Mail::to('luisfruiz19@gmail.com')->send(new Notificacion(
+        Mail::to(config('mail.from.address'))->send(new Notificacion(
             $input['name'],
             $input['email'],
             $input['proyect'],
@@ -23,6 +23,6 @@ class MailAPIController extends Controller
             $input['phone'],
             $input['contacted'],
             $input['comments']));
-        return 'enviado';
+        return response()->json(['message'=>'enviado','success'=>true]);
     }
 }
